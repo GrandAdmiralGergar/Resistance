@@ -9,6 +9,7 @@ from Resistance.GameState import GameState
 from Resistance.Mission import GetMissionCount
 from Resistance.VotingResult import VotingResult
 from Resistance.MissionResult import MissionResult
+from Resistance.Exceptions import Cheater
 
 
 def ReducePlayerToId(player):
@@ -79,7 +80,7 @@ class Game:
     def AntiCheatingMeasure(self, gameCopy, player):
         if not gameCopy.__eq__(self.state):
             print "FRAUD DETECTION ON PLAYER " + str(player.__name__())
-            exit()
+            raise Cheater(player, "Altering the game state")
             
     
     def RevealSpies(self):
@@ -114,7 +115,8 @@ class Game:
             if announcement:
                 announcements[player.playerId] = announcement
             else:
-                print "BAD ANNOUNCEMENT"
+                raise Cheater(player, "Made bad announcements")
+            
             self.AntiCheatingMeasure(gameCopy, player)
             
         #Merge new announcements into old announcements
@@ -146,12 +148,15 @@ class Game:
             
             self.AntiCheatingMeasure(gameCopy, leader)
                         
-            #If the player picks the wrong number of proposals, then players are randomly added or removed
-            if len(proposal) != mission_size:
-                while len(set(proposal)) < mission_size:
-                    proposal.append(random.choice(self.players))
-                while len(set(proposal)) > mission_size:
-                    proposal.remove(random.choice(proposal))
+            #If the player picks the wrong number of players or duplicates, an exception is raised
+            if len(proposal) != mission_size or len(set(proposal)) != len(proposal):
+                raise Cheater(leader, "Leader picked a bad mission proposal (wrong number of players or duplicate players)")
+            
+
+#                 while len(set(proposal)) < mission_size:
+#                     proposal.append(random.choice(self.players))
+#                 while len(set(proposal)) > mission_size:
+#                     proposal.remove(random.choice(proposal))
         
             #Prepare for the player voting
             passes = 0
@@ -167,7 +172,7 @@ class Game:
                 self.AntiCheatingMeasure(gameCopy, player)
                 #If the agent doesn't return pass or fail, assume pass
                 if playerVote is not self.state.PASS and playerVote is not self.state.FAIL:
-                    playerVote = self.state.PASS
+                    raise Cheater(player, "Player returned non PASS/FAIL vote for mission selection")
 
                 if playerVote == self.state.PASS:
                     passes += 1
@@ -195,8 +200,8 @@ class Game:
             self.AntiCheatingMeasure(gameCopy, self.players[pid])
             
             #If the agent doesn't return pass or fail, assume pass
-            if (playerVote is not self.state.PASS and playerVote is not self.state.FAIL) or self.players[pid].loyalty == self.state.RESISTANCE:
-                playerVote = self.state.PASS
+            if (playerVote is not self.state.PASS and playerVote is not self.state.FAIL) or (playerVote is not self.state.PASS and self.players[pid].loyalty == self.state.RESISTANCE):
+                raise Cheater(self.players[pid], "Passing bad PASS/FAIL vote to mission execution, or attempting to fail as a member of RESISTANCE")
             
             if playerVote == self.state.FAIL:
                 fails += 1

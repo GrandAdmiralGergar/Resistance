@@ -10,6 +10,7 @@ import sqlite3
 import sys
 import getopt
 import random
+from Resistance.Exceptions import Cheater
 
 
 #Define list of bots to choose from (class names only)
@@ -41,19 +42,37 @@ def main(argv):
     con = sqlite3.connect(dbFile)
     cur = con.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS GameResults(game_id, bot_name, won, side, player_count)")
+    cur.execute("CREATE TABLE IF NOT EXISTS Disqualifications(game_id, bot_name, reason)")
     
     for x in range(0, iterations):
         game_size = random.randint(5, 10)
         
         botSelection = []
         if len(bots) < game_size:
+            if len(bots) == 0:
+                print "No bots or all bots have been disqualified"
+                CloseDBConnection(con)
+                exit()
+                
             for y in range(0, game_size):
                 botSelection.append(random.choice(bots))
         else:
             botSelection = random.sample(bots, game_size)
     
         game = Game(map(ReduceClassToInstance, botSelection))
-        game.RunGame()
+        try:
+            game.RunGame()
+        
+        except Cheater as e:
+            print e
+            for x in range(0, len(bots)):
+                botName = bots[x]().__name__()
+                if botName == e.cheater.__name__():
+                    query = "INSERT INTO Disqualifications(game_id, bot_name, reason) VALUES(" + str(x) + ", \"" + botName + "\",\"" + e.reason + "\")"
+                    cur.execute(query) 
+                    bots.pop(x)
+                    
+                    break
         
         for bot in game.players:
             
@@ -68,10 +87,13 @@ def main(argv):
             
             query = "INSERT INTO GameResults(game_id, bot_name, won, side, player_count) VALUES(" + str(x) + ", \"" + botName + "\", " + str(win) + ", " + side + ", " + str(num_players) + ")"
             cur.execute(query) 
-    con.commit()
-    con.close()
+            
+    CloseDBConnection(con)
     #game = Game([SimpleBot(), SimpleBot(), SimpleBot(), SimpleBot(),SimpleBot(),SimpleBot(),SimpleBot()])
         
-
+def CloseDBConnection(connection):
+    connection.commit()
+    connection.close()
+    
 if __name__ == '__main__':
     main(sys.argv[1:])
