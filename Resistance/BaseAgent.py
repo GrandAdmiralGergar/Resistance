@@ -25,6 +25,9 @@ class BaseAgent(Player.Player):
         return "DEFAULT_AGENT"
     
      
+    def Owner(self):
+        '''Returns the name of the bot's creator'''
+        return "DEFAULT"
         
     '''DO NOT MODIFY THIS FUNCTION'''
     def AssignLoyalty(self, loyalty):

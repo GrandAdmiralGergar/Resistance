@@ -52,6 +52,7 @@ class GameState:
         '''These represent the announcements made in the last round'''
         self.newAnnouncements = {}
         
+        
     def __eq__(self, other):
         if type(other) is type(self):
             return self.__dict__ == other.__dict__
@@ -91,4 +92,16 @@ class GameState:
         else:
             return self.missionResults[missionNumber-1]
     
-            
+    def GetResistanceRoundWins(self):
+        wins = 0
+        for round in self.missionResults:
+            if round.Succeeded():
+                wins += 1
+        return wins
+    
+    def GetSpyRoundWins(self):
+        wins = 0
+        for round in self.missionResults:
+            if not round.Succeeded():
+                wins += 1
+        return wins

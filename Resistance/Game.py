@@ -185,9 +185,6 @@ class Game:
             if passes > fails:
                 break
         
-        #FAILURE
-        if passes <= fails:
-            return None
         return votingResults
 
     def ExecuteMission(self, team, roundNumber):
@@ -224,7 +221,7 @@ class Game:
         
         self.state.AddVoteResults(voteResults)
         
-        if voteResults is None:
+        if voteResults[len(voteResults)-1].PassVotes() <= voteResults[len(voteResults)-1].FailVotes():
             return self.SPIES_WIN_GAME
         
         result = self.ExecuteMission(voteResults[len(voteResults)-1].proposedTeam, roundNumber)

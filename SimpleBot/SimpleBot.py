@@ -24,6 +24,9 @@ class SimpleBot(BaseAgent):
     def __name__(self):
         return "SimpleBot"
     
+    def Owner(self):
+        return "TestSuite"
+    
     def Knows(self, spies, resistance):
         '''Knowledge given to agent from game that can be absolutely trusted.
         Typically given to spies at the start of the game'''

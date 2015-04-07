@@ -21,7 +21,7 @@ class Announcement:
         '''
         self.announcer = announcerId
         self.targets = []
-        for id in gameState.players:
+        for player in gameState.players:
             self.targets.append(gameState.UNDECLARED)
 
     
