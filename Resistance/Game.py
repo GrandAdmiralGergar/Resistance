@@ -237,6 +237,7 @@ class Game:
     def RunGame(self):
                
         self.AssignLoyalties()
+        self.RevealSpies()
         
         resistanceWins = 0
         spyWins = 0
