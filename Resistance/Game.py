@@ -85,10 +85,10 @@ class Game:
     
     def RevealSpies(self):
         for spy in self.spies:
-            spy.Knows(self.spies, self.resistance)
+            spy.Knows(map(ReducePlayerToId,self.spies), map(ReducePlayerToId,self.resistance))
             
         for rebel in self.resistance:
-            rebel.Knows([], [rebel])
+            rebel.Knows([], map(ReducePlayerToId,[rebel]))
                 
     def NextLeader(self):
         self.currentLeader = (self.currentLeader + 1) % len(self.players) 
