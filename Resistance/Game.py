@@ -84,11 +84,14 @@ class Game:
             
     
     def RevealSpies(self):
+        gameCopy = self.state.Clone()
         for spy in self.spies:
-            spy.Knows(map(ReducePlayerToId,self.spies), map(ReducePlayerToId,self.resistance))
+            spy.Knows(map(ReducePlayerToId,self.spies), map(ReducePlayerToId,self.resistance), gameCopy)
+            self.AntiCheatingMeasure(gameCopy, spy)
             
         for rebel in self.resistance:
-            rebel.Knows([], map(ReducePlayerToId,[rebel]))
+            rebel.Knows([], map(ReducePlayerToId,[rebel]), gameCopy)
+            self.AntiCheatingMeasure(gameCopy, rebel)
                 
     def NextLeader(self):
         self.currentLeader = (self.currentLeader + 1) % len(self.players) 

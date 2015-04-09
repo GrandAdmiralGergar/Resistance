@@ -27,7 +27,7 @@ class SimpleBot(BaseAgent):
     def Owner(self):
         return "TestSuite"
     
-    def Knows(self, spies, resistance):
+    def Knows(self, spies, resistance, gameState):
         '''Knowledge given to agent from game that can be absolutely trusted.
         Typically given to spies at the start of the game'''
         
