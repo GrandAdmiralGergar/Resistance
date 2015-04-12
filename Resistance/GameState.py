@@ -70,9 +70,9 @@ class GameState:
     def GetCurrentMissionNumber(self):
         return self.currentMission
     
-    def AddVoteResults(self, votingResult):
+    def AddVoteResults(self, voteResults):
         '''Adds voting results to the top of the stack'''
-        self.voteResults[self.currentMission-1].append(votingResult)
+        self.voteResults.append(voteResults)
     
     def AddMissionResults(self, missionResults):
         '''Adds mission results to the top of the stack'''
