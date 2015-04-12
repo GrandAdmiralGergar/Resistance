@@ -135,7 +135,7 @@ class Game:
         return
         
     def DetermineTeam(self, roundNumber):
-        votingResults = []
+        self.state.voteResults.append([])
         for attempt in range(0, 5) :
             votingResult = VotingResult()
             
@@ -184,11 +184,11 @@ class Game:
                 
                 votingResult.votes.append(playerVote)
             
-            votingResults.append(votingResult)
+            self.state.AddVoteResults(votingResult)
             if passes > fails:
                 break
         
-        return votingResults
+        return
 
     def ExecuteMission(self, team, roundNumber):
         result = MissionResult(roundNumber,len(self.players))
@@ -220,14 +220,12 @@ class Game:
     def DoRound(self, roundNumber):
         self.state.SetCurrentMissionNumber(roundNumber)
         
-        voteResults = self.DetermineTeam(roundNumber)
+        self.DetermineTeam(roundNumber)
         
-        self.state.AddVoteResults(voteResults)
-        
-        if voteResults[len(voteResults)-1].PassVotes() <= voteResults[len(voteResults)-1].FailVotes():
+        if self.state.voteResults[self.state.currentMission-1][-1].PassVotes() <= self.state.voteResults[self.state.currentMission-1][-1].FailVotes():
             return self.SPIES_WIN_GAME
         
-        result = self.ExecuteMission(voteResults[len(voteResults)-1].proposedTeam, roundNumber)
+        result = self.ExecuteMission(self.state.voteResults[self.state.currentMission-1][-1].proposedTeam, roundNumber)
         
         self.state.AddMissionResults(result)
         
