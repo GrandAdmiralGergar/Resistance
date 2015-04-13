@@ -41,11 +41,18 @@ class BaseAgent(object):
     def GetName(self):
         return self.name
     
-    def Knows(self, spies, resistance,gameState):
+    def RoundUpdate(self, gameState):
+        '''Used to generically update a bot before each round begins (including the first round)
+        Entirely optional'''
+        
+        return
+    
+    def Knows(self, spies, resistance, gameState):
         '''Knowledge given to agent from game that can be absolutely trusted.
         Typically given to spies at the start of the game'''
         
         '''Default action doesn't care, but feel free to add containers for the spies/resistance members'''
+        
         
         return
     

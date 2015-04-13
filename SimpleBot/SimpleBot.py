@@ -27,6 +27,12 @@ class SimpleBot(BaseAgent):
     def Owner(self):
         return "TestSuite"
     
+    def RoundUpdate(self, gameState):
+        '''Used to generically update a bot before each round begins (including the first round)
+        Entirely optional'''
+        print "UPDATING"
+        return
+    
     def Knows(self, spies, resistance, gameState):
         '''Knowledge given to agent from game that can be absolutely trusted.
         Typically given to spies at the start of the game'''
